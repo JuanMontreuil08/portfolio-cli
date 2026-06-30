@@ -1,0 +1,48 @@
+name: Juan Montreuil
+headline: Data Engineer · AWS
+location: Lima, Peru
+
+bio: >
+  I'm a Data Engineer experienced in developing AWS pipelines,
+  and automating infrastructure deployment using Terraform. I'm also a fellow
+  ASES Summit delegate, annual conference about entrepreneurship hosted at
+  Stanford University.
+
+  My passions are technology, travelling, sports, and doing pair programming
+  with coding assistants.
+
+links:
+  github: https://github.com/JuanMontreuil08
+  x: https://x.com/yeiyeiai
+  linkedin: https://www.linkedin.com/in/juan-montreuil/
+
+contact: juanmontreuil71@gmail.com
+contactable: true
+
+projects:
+  - title: mirror.ai
+    description: >
+      AI companion for stock portfolio management dedicated for Latam retail investors
+    stack: [TypeScript, LangGraph, Trigger.dev]
+    repo: https://github.com/JuanMontreuil08/mirror
+    lastCommit: "2026-06-27"
+
+  - title: world cup football companion
+    description: >
+      Voice AI analyst for FIFA World Cup 2026 — live stats, real-time Q&A, and video search via computer use.
+    stack: [TypeScript, OpenAI Realtime, OpenAI Computer Use]
+    repo: https://github.com/JuanMontreuil08/world-cup-football-companion
+    lastCommit: "2026-06-24"
+
+experience:
+  - role: Data Engineer
+    company: Mibanco
+    period: January 2026 – Current
+    summary: >
+      Part of the core AI team behind Mibanco × WhatsApp. Own the entire data infrastructure on AWS.
+
+  - role: BI Analyst
+    company: Rappi (YC Winter 2016)
+    period: 2022 – 2024
+    summary: >
+      Worked closely with Growth Marketing and Rappi Prime teams, building pipelines with Apache Airflow.
