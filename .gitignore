@@ -4,3 +4,4 @@ host.key
 .env
 .env.local
 .DS_Store
+host.key.pub
