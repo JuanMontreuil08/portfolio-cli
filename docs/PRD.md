@@ -263,30 +263,34 @@ server.listen(Number(process.env.PORT) || 2222, '0.0.0.0');
 
 Cada fase entrega algo verificable. Construir en este orden:
 
-1. **`core/`** — `schema.ts`, `load.ts`, `search.ts`, `portfolio.yaml` de ejemplo. *Done cuando:* `load.ts` parsea y valida el YAML y un test imprime el objeto tipado.
-2. **Retrato ASCII** — `scripts/make-portrait.*` + `assets/portrait.txt`. *Done cuando:* el `.txt` se ve bien impreso en terminal.
-3. **UI en Ink (local)** — todas las vistas, nav, status bar, navegación por teclado, leyendo de `core/`. Correr con `node`/`tsx` localmente. *Done cuando:* se navegan las 4 secciones con teclado y `q` cierra.
-4. **Servidor SSH** — `ssh/server.tsx`. *Done cuando:* `ssh -t -p 2222 localhost` abre la misma UI.
-5. **Despliegue** — Dockerfile, `fly.toml`, secrets, DNS. *Done cuando:* `ssh hi.midominio.com` funciona desde fuera.
+1. ✅ **`core/`** — `schema.ts`, `load.ts`, `search.ts`, `portfolio.yaml`. Parsea y valida YAML con Zod.
+2. ✅ **Logo animado** — `assets/logo.txt` con efecto wave en acento teal.
+3. ✅ **UI en Ink (local)** — 4 secciones navegables, Gemini AI summary + commits por proyecto, status bar contextual. `npm run local` funciona.
+4. ✅ **Servidor SSH** — `ssh/server.tsx`. `ssh -t -p 2222 localhost` abre la UI correctamente. Fixes clave: CRLF conversion (`\n`→`\r\n`), PTY dimensions via `makeInkCompatible`, env file en script `dev`.
+5. **Despliegue** — Dockerfile, `fly.toml`, secrets, DNS. *Siguiente:* `ssh hi.midominio.com` funciona desde fuera.
 
 ---
 
 ## 12. Criterios de aceptación (global)
 
 - [ ] `ssh hi.midominio.com` abre el portafolio sin pedir contraseña ni instalar nada.
-- [ ] Se ve el retrato ASCII + descripción breve en la vista inicial.
-- [ ] Las 4 secciones (About, Proyectos, Experiencia, Contacto) son navegables con flechas/`tab` y `enter`.
-- [ ] `q` cierra la sesión limpiamente.
-- [ ] Editar `portfolio.yaml` cambia el contenido **sin tocar código**.
-- [ ] La estética coincide con la referencia: monoespaciada, fondo oscuro, acento ámbar, status bar inferior con atajos.
-- [ ] `core/` no importa nada de `ssh/`; `ssh/` solo importa de `core/` y `ui/`.
+- ✅ Se ve el logo animado + descripción breve en la vista inicial.
+- ✅ Las 4 secciones (About, Proyectos, Experiencia, Contacto) son navegables con flechas/`tab` y `enter`.
+- ✅ `q` cierra la sesión limpiamente.
+- ✅ Editar `portfolio.yaml` cambia el contenido **sin tocar código**.
+- ✅ La estética: monoespaciada, fondo claro, acento teal, status bar contextual.
+- ✅ `core/` no importa nada de `ssh/`; `ssh/` solo importa de `core/` y `ui/`.
+- ✅ Proyectos abren detalle con AI summary (Gemini) + commits recientes vía GitHub API.
 
 ---
 
 ## 13. Gotchas conocidos
 
 - **Raw mode / PTY:** Ink necesita raw mode para capturar flechas y `q`. Sin PTY asignado aparece el error `Raw mode is not supported`. Al probar en local, conectarse con `ssh -t` para forzar la asignación de pseudo-terminal.
-- **Stream como TTY:** el stream de `ssh2` no es un TTY por defecto; hay que asignar `isTTY`, `columns` y `rows` antes de `render()`.
+- **Stream como TTY:** el stream de `ssh2` no es un TTY por defecto; hay que asignar `isTTY`, `columns` y `rows` antes de `render()`. Ver `makeInkCompatible()` en `ssh/server.tsx`.
+- **CRLF en SSH:** Ink escribe `\n` pero SSH sin PTY real necesita `\r\n`. Sin `\r` el cursor no regresa a columna 0 y el layout se rompe. Solución: interceptar `stream.write` y convertir `\n`→`\r\n`.
+- **PTY dimensions:** leer `info.cols`/`info.rows` del evento `pty` en la session y pasarlos a `makeInkCompatible`. Las dimensiones del proceso servidor (`process.stdout.columns`) son incorrectas para el cliente.
+- **Env vars en dev:** `npm run dev` necesita `--env-file=.env.local` para que `GEMINI_API_KEY` esté disponible.
 - **Host key estable:** no regenerar el host key en cada deploy.
 - **ASCII en runtime no:** pre-generar el retrato; no procesar la imagen en cada conexión.
 

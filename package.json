@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx ssh/server.tsx",
+    "dev": "tsx --env-file=.env.local ssh/server.tsx",
     "local": "tsx --env-file=.env.local ui/local.tsx",
     "build": "tsc",
     "typecheck": "tsc --noEmit"
