@@ -20,19 +20,23 @@ contact: juanmontreuil71@gmail.com
 contactable: true
 
 projects:
+  - title: stylist bot
+    description: >
+      AI shopping stylist on WhatsApp. The agent searches a clothing catalog, the web and runs a virtual try-on with OpenVTO
+    stack: [Python, Kapso, AWS Bedrock AgentCore, OpenVTO]
+    repo: https://github.com/JuanMontreuil08/stylist-bot
+
   - title: mirror.ai
     description: >
       AI companion for stock portfolio management dedicated for Latam retail investors
     stack: [TypeScript, LangGraph, Trigger.dev]
     repo: https://github.com/JuanMontreuil08/mirror
-    lastCommit: "2026-06-27"
 
   - title: world cup football companion
     description: >
-      Voice AI analyst for FIFA World Cup 2026 — live stats, real-time Q&A, and video search via computer use.
+      Voice AI analyst for FIFA World Cup 2026 — live stats, real-time Q&A, and video search via computer use
     stack: [TypeScript, OpenAI Realtime, OpenAI Computer Use]
     repo: https://github.com/JuanMontreuil08/world-cup-football-companion
-    lastCommit: "2026-06-24"
 
 experience:
   - role: Data Engineer

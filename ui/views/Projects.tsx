@@ -21,9 +21,8 @@ export default function Projects({ projects, selectedIndex }: ProjectsProps) {
                 <Text bold color={theme.accent}>▸ {p.title}</Text>
                 <Box flexDirection="column" paddingLeft={2}>
                   <Text dimColor wrap="wrap">{p.description.trim()}</Text>
-                  <Text dimColor>{p.stack.join(' · ')}</Text>
+                  <Text bold color={theme.accent}><Text dimColor>{p.stack.join(' · ')}</Text></Text>
                   {p.repo && <Text dimColor>{p.repo}</Text>}
-                  {p.lastCommit && <Text dimColor>last commit: {p.lastCommit}</Text>}
                 </Box>
               </Box>
             ) : (

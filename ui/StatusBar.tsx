@@ -4,9 +4,10 @@ import { theme } from './theme.js';
 
 interface StatusBarProps {
   detailOpen?: boolean;
+  section?: string;
 }
 
-export default function StatusBar({ detailOpen }: StatusBarProps) {
+export default function StatusBar({ detailOpen, section }: StatusBarProps) {
   const { columns } = useWindowSize();
   const left = 'v0.1.0';
 
@@ -22,7 +23,8 @@ export default function StatusBar({ detailOpen }: StatusBarProps) {
     );
   }
 
-  const right = '↹ navigate   ↵ select   q quit';
+  const showSelect = section === 'projects';
+  const right = showSelect ? '↹ navigate   ↵ select   q quit' : '↹ navigate   q quit';
   const gap = Math.max(1, columns - left.length - right.length - 4);
 
   return (
@@ -30,7 +32,9 @@ export default function StatusBar({ detailOpen }: StatusBarProps) {
       <Text dimColor>{left}</Text>
       <Text>{' '.repeat(gap)}</Text>
       <Text dimColor>↹ </Text><Text color={theme.accent}>navigate</Text>
-      <Text dimColor>   ↵ </Text><Text color={theme.accent}>select</Text>
+      {showSelect && (
+        <><Text dimColor>   ↵ </Text><Text color={theme.accent}>select</Text></>
+      )}
       <Text dimColor>   q </Text><Text color={theme.accent}>quit</Text>
     </Box>
   );

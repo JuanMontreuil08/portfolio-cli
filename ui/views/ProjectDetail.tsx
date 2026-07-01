@@ -46,8 +46,8 @@ export default function ProjectDetail({ project, ai }: ProjectDetailProps) {
         </Box>
       )}
 
-      {/* Commits — appear as soon as fetch is done */}
-      {ai.commits.length > 0 && (
+      {/* Commits — appear only after description finishes streaming */}
+      {ai.status === 'done' && ai.commits.length > 0 && (
         <Box flexDirection="column" paddingLeft={2} gap={0}>
           <Text dimColor>recent commits</Text>
           {ai.commits.map((c, i) => (

@@ -144,7 +144,7 @@ export default function App({ portfolio }: AppProps) {
         </Box>
       </Box>
       <Box marginTop={1}>
-        <StatusBar detailOpen={detailOpen} />
+        <StatusBar detailOpen={detailOpen} section={section} />
 
       </Box>
     </Box>
