@@ -13,13 +13,18 @@ const maxCol = Math.max(...lines.map(l => l.length));
 const WAVE_WIDTH = 8;
 const PERIOD = maxCol + WAVE_WIDTH + 6;
 
-export default function Logo() {
+interface LogoProps {
+  paused?: boolean;
+}
+
+export default function Logo({ paused = false }: LogoProps) {
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {
+    if (paused) return;
     const t = setInterval(() => setFrame(f => (f + 1) % PERIOD), 80);
     return () => clearInterval(t);
-  }, []);
+  }, [paused]);
 
   return (
     <Box flexDirection="column" flexShrink={0}>

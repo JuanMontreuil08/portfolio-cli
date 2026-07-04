@@ -32,6 +32,7 @@ export default function App({ portfolio }: AppProps) {
   const [section, setSection] = useState<Section>('about');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [detailScroll, setDetailScroll] = useState(0);
   const [ai, setAi] = useState<AiState>(IDLE_AI);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -55,6 +56,7 @@ export default function App({ portfolio }: AppProps) {
 
     setAi({ status: 'loading', text: '', commits: [] });
     setDetailOpen(true);
+    setDetailScroll(0);
 
     (async () => {
       try {
@@ -83,12 +85,15 @@ export default function App({ portfolio }: AppProps) {
     abortRef.current?.abort();
     abortRef.current = null;
     setDetailOpen(false);
+    setDetailScroll(0);
     setAi(IDLE_AI);
   };
 
   useInput((input, key) => {
     if (detailOpen) {
       if (key.escape || input === 'b') closeDetail();
+      if (key.upArrow) setDetailScroll(s => Math.max(0, s - 1));
+      if (key.downArrow) setDetailScroll(s => s + 1);
       return;
     }
 
@@ -113,19 +118,21 @@ export default function App({ portfolio }: AppProps) {
     }
   });
 
+  const showLogo = columns >= 90;
   const logoWidth = 32;
   const gap = 4;
-  const contentWidth = Math.max(30, columns - logoWidth - gap - 4);
 
   return (
     <Box flexDirection="column" minHeight={rows}>
-      <Box flexDirection="row" paddingX={2} paddingTop={1} gap={gap}>
-        <Box width={logoWidth} flexShrink={0}>
-          <Logo />
-        </Box>
-        <Box flexDirection="column" gap={1} width={contentWidth}>
+      <Box flexDirection="row" paddingX={2} paddingTop={1} gap={showLogo ? gap : 0}>
+        {showLogo && (
+          <Box width={logoWidth} flexShrink={0}>
+            <Logo paused={detailOpen} />
+          </Box>
+        )}
+        <Box flexDirection="column" gap={1} flexGrow={1} flexShrink={1} minWidth={0}>
           {detailOpen ? (
-            <ProjectDetail project={portfolio.projects[selectedIndex]} ai={ai} />
+            <ProjectDetail project={portfolio.projects[selectedIndex]} ai={ai} scrollOffset={detailScroll} />
           ) : (
             <>
               {section === 'about' && <About portfolio={portfolio} />}
@@ -136,9 +143,7 @@ export default function App({ portfolio }: AppProps) {
                 <ExperienceView experience={portfolio.experience} selectedIndex={selectedIndex} />
               )}
               {section === 'contact' && <Contact portfolio={portfolio} selectedIndex={selectedIndex} />}
-              <Box marginTop={1}>
-                <Nav active={section} />
-              </Box>
+              <Nav active={section} />
             </>
           )}
         </Box>

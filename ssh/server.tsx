@@ -68,7 +68,7 @@ const server = new Server({ hostKeys: [hostKey] }, (client) => {
 
         makeInkCompatible(stream, cols, rows);
 
-        const { unmount } = render(
+        const { unmount, waitUntilExit } = render(
           <App portfolio={portfolio} />,
           {
             stdout: stream as unknown as NodeJS.WriteStream,
@@ -77,6 +77,9 @@ const server = new Server({ hostKeys: [hostKey] }, (client) => {
             alternateScreen: true,
           },
         );
+
+        // When the user presses q, close the SSH stream so the client returns to its shell
+        waitUntilExit().then(() => stream.end()).catch(() => stream.end());
 
         // Translate ssh2 window-change → Ink resize
         stream.on('window-change', (info: any) => {

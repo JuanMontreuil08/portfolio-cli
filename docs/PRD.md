@@ -266,7 +266,8 @@ Cada fase entrega algo verificable. Construir en este orden:
 1. ✅ **`core/`** — `schema.ts`, `load.ts`, `search.ts`, `portfolio.yaml`. Parsea y valida YAML con Zod.
 2. ✅ **Logo animado** — `assets/logo.txt` con efecto wave en acento teal.
 3. ✅ **UI en Ink (local)** — 4 secciones navegables, Gemini AI summary + commits por proyecto, status bar contextual. `npm run local` funciona.
-4. ✅ **Servidor SSH** — `ssh/server.tsx`. `ssh -t -p 2222 localhost` abre la UI correctamente. Fixes clave: CRLF conversion (`\n`→`\r\n`), PTY dimensions via `makeInkCompatible`, env file en script `dev`.
+4. ✅ **Servidor SSH** — `ssh/server.tsx`. `ssh -t -p 2222 localhost` abre la UI correctamente. Fixes clave: CRLF conversion (`\n`→`\r\n`), PTY dimensions via `makeInkCompatible`, env file en script `dev`. `waitUntilExit().then(() => stream.end())` para cerrar sesión limpiamente con `q`.
+4b. ✅ **UI responsive + polish** — Nav vertical en terminales < 90 cols. `wrapText` manual en About, Projects, Experience y ProjectDetail para evitar que el CRLF patch rompa el alineado del texto. Párrafos de IA divididos por `\n` antes de wrapText. Logo animado se pausa (sin unmount) al abrir ProjectDetail para eliminar renders de 80ms que compiten con el scroll.
 5. **Despliegue** — Dockerfile, `fly.toml`, secrets, DNS. *Siguiente:* `ssh hi.midominio.com` funciona desde fuera.
 
 ---
@@ -293,6 +294,11 @@ Cada fase entrega algo verificable. Construir en este orden:
 - **Env vars en dev:** `npm run dev` necesita `--env-file=.env.local` para que `GEMINI_API_KEY` esté disponible.
 - **Host key estable:** no regenerar el host key en cada deploy.
 - **ASCII en runtime no:** pre-generar el retrato; no procesar la imagen en cada conexión.
+- **`wrap="wrap"` en Ink + CRLF:** no usar el prop `wrap="wrap"` de `<Text>` — Ink inserta `\n` internos que el patch CRLF convierte a `\r\n`, reseteando el cursor a columna 0. Usar `wrapText` manual que produce `<Text>` separados por línea.
+- **Párrafos con `\n` en AI text:** pasar el texto de IA por `text.split('\n')` antes de `wrapText`; de lo contrario `\n` queda dentro de un "word" y se rompe el alineado.
+- **Logo animation vs scroll latency:** el `setInterval` de 80ms del Logo compite con re-renders del scroll en ProjectDetail. Solución: pasar `paused={detailOpen}` al Logo para detener el interval sin unmontarlo.
+- **`q` deja terminal en blanco:** `exit()` de Ink no cierra el stream SSH. Usar `waitUntilExit().then(() => stream.end())` para cerrar la sesión y devolver el control al shell del cliente.
+- **Resize en Kiro IDE:** Kiro reporta el ancho del panel (no la ventana) como PTY cols (~68–80) y no envía eventos `window-change` al redimensionar. El responsive funciona solo al momento de la conexión inicial.
 
 ---
 
