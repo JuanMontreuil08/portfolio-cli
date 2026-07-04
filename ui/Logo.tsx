@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { theme } from './theme.js';
 
-const logoPath = path.resolve(fileURLToPath(import.meta.url), '../../assets/logo.txt');
+const logoPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../assets/logo.txt');
 const logoText = fs.readFileSync(logoPath, 'utf8');
 const lines = logoText.split('\n');
 const maxCol = Math.max(...lines.map(l => l.length));
