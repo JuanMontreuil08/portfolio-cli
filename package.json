@@ -6,6 +6,7 @@
     "dev": "tsx --env-file=.env.local ssh/server.tsx",
     "local": "tsx --env-file=.env.local ui/local.tsx",
     "build": "tsc",
+    "start": "node dist/ssh/server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -9,12 +9,17 @@ import App from '../ui/App.js';
 // Fail fast at startup — better than crashing mid-connection
 const portfolio = loadPortfolio();
 
-const hostKeyPath = process.env.HOST_KEY_PATH ?? 'host.key';
-if (!fs.existsSync(hostKeyPath)) {
-  console.error(`host.key not found at: ${hostKeyPath}`);
-  process.exit(1);
+let hostKey: Buffer | string;
+if (process.env.HOST_KEY) {
+  hostKey = process.env.HOST_KEY;
+} else {
+  const hostKeyPath = process.env.HOST_KEY_PATH ?? 'host.key';
+  if (!fs.existsSync(hostKeyPath)) {
+    console.error(`host.key not found at: ${hostKeyPath}`);
+    process.exit(1);
+  }
+  hostKey = fs.readFileSync(hostKeyPath);
 }
-const hostKey = fs.readFileSync(hostKeyPath);
 
 // Patch an ssh2 stream so Ink treats it as a real TTY.
 // Pattern from github.com/whoisarpit/ssh-coffee-shop

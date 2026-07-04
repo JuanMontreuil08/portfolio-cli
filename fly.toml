@@ -1,0 +1,12 @@
+app = "juanmontreuil-portfolio"
+primary_region = "mad"
+
+[build]
+
+[[services]]
+  internal_port = 2222
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 22
+    handlers = []
