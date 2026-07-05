@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { type RepoData } from './github.js';
 
-const API_KEY = process.env.GOOGLE_API_KEY ?? '';
+const API_KEY = process.env.GEMINI_API_KEY ?? '';
 
 export async function* streamSummary(data: RepoData): AsyncGenerator<string> {
   if (!data.readme) {
