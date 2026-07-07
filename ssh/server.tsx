@@ -1,7 +1,13 @@
 import React from 'react';
 import { render } from 'ink';
+import chalk from 'chalk';
 import ssh2 from 'ssh2';
 const { Server } = ssh2;
+
+// Chalk detects color level once at import using process.stdout.
+// Under PM2 / Oracle, stdout is not a TTY so it defaults to level 0 (no colors).
+// Setting the singleton here forces truecolor for all renders including Ink's colorize.js.
+chalk.level = 3;
 import fs from 'fs';
 import { loadPortfolio } from '../core/load.js';
 import App from '../ui/App.js';
