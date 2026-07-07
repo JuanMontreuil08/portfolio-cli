@@ -28,20 +28,36 @@ export default function Logo({ paused = false }: LogoProps) {
 
   return (
     <Box flexDirection="column" flexShrink={0}>
-      {lines.map((line, lineIdx) => (
-        <Text key={lineIdx}>
-          {line.split('').map((char, colIdx) => {
-            if (char === ' ') return char;
-            const pos = ((frame - colIdx) % PERIOD + PERIOD) % PERIOD;
-            const lit = pos < WAVE_WIDTH;
-            return (
-              <Text key={colIdx} color={lit ? theme.accent : undefined} bold={lit} dimColor={!lit}>
-                {char}
-              </Text>
-            );
-          })}
-        </Text>
-      ))}
+      {lines.map((line, lineIdx) => {
+        // Group consecutive chars by lit/unlit into segments.
+        // Reduces ANSI codes per frame from ~100 to ~20-30.
+        const segments: { text: string; lit: boolean }[] = [];
+        for (const [colIdx, char] of line.split('').entries()) {
+          if (char === ' ') {
+            const last = segments[segments.length - 1];
+            if (last) { last.text += char; }
+            else { segments.push({ text: char, lit: false }); }
+            continue;
+          }
+          const pos = ((frame - colIdx) % PERIOD + PERIOD) % PERIOD;
+          const lit = pos < WAVE_WIDTH;
+          const last = segments[segments.length - 1];
+          if (last && last.lit === lit) { last.text += char; }
+          else { segments.push({ text: char, lit }); }
+        }
+
+        return (
+          <Text key={lineIdx}>
+            {segments.map((seg, i) =>
+              seg.lit ? (
+                <Text key={i} color={theme.accent} bold>{seg.text}</Text>
+              ) : (
+                <Text key={i} dimColor>{seg.text}</Text>
+              )
+            )}
+          </Text>
+        );
+      })}
     </Box>
   );
 }
