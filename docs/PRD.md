@@ -269,6 +269,7 @@ Cada fase entrega algo verificable. Construir en este orden:
 4. ✅ **Servidor SSH** — `ssh/server.tsx`. `ssh -t -p 2222 localhost` abre la UI correctamente. Fixes clave: CRLF conversion (`\n`→`\r\n`), PTY dimensions via `makeInkCompatible`, env file en script `dev`. `waitUntilExit().then(() => stream.end())` para cerrar sesión limpiamente con `q`.
 4b. ✅ **UI responsive + polish** — Nav vertical en terminales < 90 cols. `wrapText` manual en About, Projects, Experience y ProjectDetail para evitar que el CRLF patch rompa el alineado del texto. Párrafos de IA divididos por `\n` antes de wrapText. Logo animado se pausa (sin unmount) al abrir ProjectDetail para eliminar renders de 80ms que compiten con el scroll.
 5. ✅ **Despliegue** — Oracle Cloud VM (Ubuntu 22.04, free tier), VCN + Security List con puerto 2222 abierto, PM2 como process manager. App corriendo en `92.5.185.78:2222`. *Pendiente:* DNS `hi.juanmontreuil.com` → IP.
+5b. ✅ **Fix colores + performance SSH** — Chalk detectaba `level = 0` al arrancar bajo PM2 (stdout no es TTY). Fix: `chalk.level = 3` en `server.tsx` antes del primer render. Logo optimizado: chars consecutivos del mismo color agrupados en segmentos → menos nodos React y menos datos ANSI por frame → navegación más rápida.
 
 ---
 
@@ -299,6 +300,8 @@ Cada fase entrega algo verificable. Construir en este orden:
 - **Logo animation vs scroll latency:** el `setInterval` de 80ms del Logo compite con re-renders del scroll en ProjectDetail. Solución: pasar `paused={detailOpen}` al Logo para detener el interval sin unmontarlo.
 - **`q` deja terminal en blanco:** `exit()` de Ink no cierra el stream SSH. Usar `waitUntilExit().then(() => stream.end())` para cerrar la sesión y devolver el control al shell del cliente.
 - **Resize en Kiro IDE:** Kiro reporta el ancho del panel (no la ventana) como PTY cols (~68–80) y no envía eventos `window-change` al redimensionar. El responsive funciona solo al momento de la conexión inicial.
+- **Colores sin TTY (PM2/Oracle):** Chalk evalúa el nivel de color una vez al importar usando `process.stdout`. Bajo PM2, stdout no es TTY → `chalk.level = 0` → sin colores. Solución: `chalk.level = 3` explícito en `server.tsx` antes de cualquier render. Sin esto el acento teal y todos los ANSI codes son stripeados.
+- **Performance animación SSH:** Renderizar un `<Text>` por carácter en el logo (~100 nodos) genera mucho tráfico ANSI por frame (cada 80ms). Agrupar chars consecutivos del mismo color en segmentos reduce a ~20-30 nodos y menos datos por frame → navegación más fluida sobre SSH.
 
 ---
 
