@@ -3,7 +3,7 @@
 Personal portfolio navigable via SSH — built with Node.js, TypeScript, and Ink (React for terminal).
 
 ```bash
-ssh -p 2222 92.5.185.78
+ssh hi.juanmontreuil.com
 ```
 
 ## Stack
@@ -28,12 +28,19 @@ Requires a `GOOGLE_API_KEY` in `.env.local` for AI project summaries.
 
 **VM:** Ubuntu 22.04, shape VM.Standard.A1.Flex (free tier)
 **Public IP:** 92.5.185.78
-**Port:** 2222
+**DNS:** `hi.juanmontreuil.com` → `92.5.185.78`
 
 **Oracle services used:**
 - Compute Instance — runs the Node.js SSH server
 - Virtual Cloud Network (VCN) — private network for the VM
-- Security List — ingress rules (port 22 for admin SSH, port 2222 for portfolio)
+- Security List — ingress rules (port 22 and 2222 open)
+
+**Port routing:**
+iptables redirects port 22 → 2222 so users connect without `-p`:
+```bash
+sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
+sudo netfilter-persistent save
+```
 
 **On the server:**
 ```bash
@@ -49,11 +56,6 @@ pm2 start "node dist/ssh/server.js" --name portfolio
 pm2 startup    # run the command it outputs
 pm2 save
 ```
-
-**Pending:**
-- DNS — add an A record pointing `hi.juanmontreuil.com` to `92.5.185.78`
-- Once DNS is set: `ssh -p 2222 hi.juanmontreuil.com`
-- Optional: iptables redirect port 22 → 2222 to drop the `-p 2222`
 
 ## Architecture
 

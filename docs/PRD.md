@@ -268,14 +268,14 @@ Cada fase entrega algo verificable. Construir en este orden:
 3. ✅ **UI en Ink (local)** — 4 secciones navegables, Gemini AI summary + commits por proyecto, status bar contextual. `npm run local` funciona.
 4. ✅ **Servidor SSH** — `ssh/server.tsx`. `ssh -t -p 2222 localhost` abre la UI correctamente. Fixes clave: CRLF conversion (`\n`→`\r\n`), PTY dimensions via `makeInkCompatible`, env file en script `dev`. `waitUntilExit().then(() => stream.end())` para cerrar sesión limpiamente con `q`.
 4b. ✅ **UI responsive + polish** — Nav vertical en terminales < 90 cols. `wrapText` manual en About, Projects, Experience y ProjectDetail para evitar que el CRLF patch rompa el alineado del texto. Párrafos de IA divididos por `\n` antes de wrapText. Logo animado se pausa (sin unmount) al abrir ProjectDetail para eliminar renders de 80ms que compiten con el scroll.
-5. ✅ **Despliegue** — Oracle Cloud VM (Ubuntu 22.04, free tier), VCN + Security List con puerto 2222 abierto, PM2 como process manager. App corriendo en `92.5.185.78:2222`. *Pendiente:* DNS `hi.juanmontreuil.com` → IP.
+5. ✅ **Despliegue** — Oracle Cloud VM (Ubuntu 22.04, free tier), VCN + Security List con puertos 22 y 2222 abiertos, PM2 como process manager, iptables PREROUTING redirige 22→2222 (persistido con netfilter-persistent). DNS `hi.juanmontreuil.com` → `92.5.185.78` activo. App accesible en `ssh hi.juanmontreuil.com`.
 5b. ✅ **Fix colores + performance SSH** — Chalk detectaba `level = 0` al arrancar bajo PM2 (stdout no es TTY). Fix: `chalk.level = 3` en `server.tsx` antes del primer render. Logo optimizado: chars consecutivos del mismo color agrupados en segmentos → menos nodos React y menos datos ANSI por frame → navegación más rápida.
 
 ---
 
 ## 12. Criterios de aceptación (global)
 
-- [ ] `ssh hi.juanmontreuil.com` abre el portafolio sin pedir contraseña ni instalar nada. (IP lista: `92.5.185.78:2222`, falta DNS)
+- ✅ `ssh hi.juanmontreuil.com` abre el portafolio sin pedir contraseña ni instalar nada.
 - ✅ Se ve el logo animado + descripción breve en la vista inicial.
 - ✅ Las 4 secciones (About, Proyectos, Experiencia, Contacto) son navegables con flechas/`tab` y `enter`.
 - ✅ `q` cierra la sesión limpiamente.
