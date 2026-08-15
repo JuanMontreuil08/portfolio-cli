@@ -20,6 +20,12 @@ contact: juanmontreuil71@gmail.com
 contactable: true
 
 projects:
+  - title: cooper
+    description: >
+      Interactive visual guide to active satellites orbiting Earth, with searchable mission data, estimated positions, ground tracks, and AI-assisted research
+    stack: [TypeScript, MapLibre GL, Supabase, Trigger.dev, OpenAI]
+    repo: https://github.com/JuanMontreuil08/openspace
+
   - title: stylist bot
     description: >
       AI shopping stylist on WhatsApp. The agent searches a clothing catalog, the web and runs a virtual try-on with OpenVTO
